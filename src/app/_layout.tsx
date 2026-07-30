@@ -22,8 +22,8 @@ export default function RootLayout() {
       }
     }>
       <Tabs.Screen name="index" options={{ href: null }} />
-      <Tabs.Screen name="movies" options={{ title: "Movies", tabBarIcon: ({ color, size }) => (<Ionicons name="videocam" size={size} color={color} />) }} />
       <Tabs.Screen name="music" options={{ title: "Music", tabBarIcon: ({ color, size }) => (<Ionicons name="game-controller" size={size} color={color} />) }} />
+      <Tabs.Screen name="books" options={{ title: "Books", tabBarIcon: ({ color, size }) => (<Ionicons name="book" size={size} color={color} />) }} />
     </Tabs>
   );
 }

@@ -2,7 +2,7 @@ import { Redirect } from "expo-router";
 import { StyleSheet } from "react-native";
 
 export default function Index() {
-  return <Redirect href="/movies" />;
+  return <Redirect href="/books" />;
 }
 
 const styles = StyleSheet.create({
