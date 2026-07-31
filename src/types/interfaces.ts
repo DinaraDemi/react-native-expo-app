@@ -19,6 +19,16 @@ export interface Book {
     language?: string[];
     public_scan_b?: boolean;
     title: string;
+    subject?: string[];
+}
+
+export interface BookDetails {
+    key: string;
+    title: string;
+    description?: string | { value: string };
+    covers?: number[];
+    subjects?: string[];
+    first_publish_date?: string;
 }
 
 

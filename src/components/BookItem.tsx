@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/colors";
 import { Book } from "@/types/interfaces";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface BookItemProps {
   item: Book;
@@ -17,8 +18,21 @@ export const BookItem = ({ item }: BookItemProps) => {
     item.author_name?.join(", ") ||
     "Unknown Author";
 
+  const handlePress = () => {
+    const workId = item.key.split("/").pop() || item.key;
+    router.push({
+      pathname: "/book/[id]",
+      params: {
+        id: workId,
+        coverId: coverId ? String(coverId) : "",
+        author: authorNames,
+        title: item.title,
+      },
+    });
+  };
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
       {coverUrl ? (
         <Image source={{ uri: coverUrl }} style={styles.cover} resizeMode="cover" />
       ) : (
@@ -38,7 +52,7 @@ export const BookItem = ({ item }: BookItemProps) => {
           <Text style={styles.year}>{item.first_publish_year}</Text>
         ) : null}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
