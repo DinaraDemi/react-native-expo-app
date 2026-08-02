@@ -4,4 +4,5 @@ export const COLORS = {
     inactive: "#888888",
     itemBackground: "#141414",
     containerBackground: "#1F1F1F",
+    favourite: "#e05c5c",
 } as const;

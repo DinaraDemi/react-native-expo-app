@@ -1,5 +1,7 @@
 import { COLORS } from "@/constants/colors";
+import { useFavouritesContext } from "@/context/FavouritesContext";
 import { Book } from "@/types/interfaces";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -8,6 +10,9 @@ interface BookItemProps {
 }
 
 export const BookItem = ({ item }: BookItemProps) => {
+  const { isFavourite, toggleFavourite } = useFavouritesContext();
+  const fav = isFavourite(item.key);
+
   const coverId = item.cover_id || item.cover_i;
   const coverUrl = coverId
     ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
@@ -52,6 +57,18 @@ export const BookItem = ({ item }: BookItemProps) => {
           <Text style={styles.year}>{item.first_publish_year}</Text>
         ) : null}
       </View>
+
+      <TouchableOpacity
+        style={styles.heartButton}
+        onPress={() => toggleFavourite(item)}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      >
+        <Ionicons
+          name={fav ? "heart" : "heart-outline"}
+          size={22}
+          color={fav ? COLORS.favourite : COLORS.inactive}
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -100,5 +117,8 @@ const styles = StyleSheet.create({
   year: {
     color: COLORS.inactive,
     fontSize: 12,
+  },
+  heartButton: {
+    padding: 4,
   },
 });

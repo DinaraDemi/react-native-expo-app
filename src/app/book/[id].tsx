@@ -1,15 +1,19 @@
 import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { COLORS } from "@/constants/colors";
-import { BookDetails } from "@/types/interfaces";
+import { useFavouritesContext } from "@/context/FavouritesContext";
+import { Book, BookDetails } from "@/types/interfaces";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
   const [details, setDetails] = useState<BookDetails | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+
+  const { isFavourite, toggleFavourite } = useFavouritesContext();
 
   useEffect(() => {
     if (!params.id) return;
@@ -40,6 +44,16 @@ export default function BookDetailsScreen() {
 
   const title = details?.title || params.title || "Book Details";
   const author = params.author || "Unknown Author";
+
+  // Reconstruct a minimal Book object for the favourites hook
+  const bookKey = `/works/${params.id}`;
+  const bookForFav: Book = {
+    key: bookKey,
+    title: title,
+    author_name: [author],
+    cover_id: coverId ? Number(coverId) : undefined,
+  };
+  const fav = isFavourite(bookKey);
 
   const descriptionText = typeof details?.description === "string"
     ? details.description
@@ -75,6 +89,17 @@ export default function BookDetailsScreen() {
 
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.author}>{author}</Text>
+
+          <TouchableOpacity style={styles.favButton} onPress={() => toggleFavourite(bookForFav)}>
+            <Ionicons
+              name={fav ? "heart" : "heart-outline"}
+              size={24}
+              color={fav ? COLORS.favourite : COLORS.inactive}
+            />
+            <Text style={[styles.favText, fav && styles.favTextActive]}>
+              {fav ? "Remove from Favourites" : "Add to Favourites"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -137,6 +162,24 @@ const styles = StyleSheet.create({
     color: COLORS.inactive,
     fontSize: 16,
     textAlign: "center",
+    marginBottom: 12,
+  },
+  favButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: COLORS.itemBackground,
+  },
+  favText: {
+    color: COLORS.inactive,
+    fontSize: 14,
+  },
+  favTextActive: {
+    color: COLORS.favourite,
   },
   section: {
     marginBottom: 24,
