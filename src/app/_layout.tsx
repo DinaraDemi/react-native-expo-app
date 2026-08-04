@@ -1,6 +1,9 @@
 import { COLORS } from "@/constants/colors";
 import { FavouritesProvider } from "@/context/FavouritesContext";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
+import { TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
@@ -53,7 +56,18 @@ export default function RootLayout() {
             name="book/[id]"
             options={{
               drawerItemStyle: { display: 'none' },
-              title: "Book Details"
+              title: "Book Details",
+              headerLeft: () => {
+                const navigation = useNavigation();
+                return (
+                  <TouchableOpacity 
+                    onPress={() => (navigation as any).toggleDrawer()}
+                    style={{ marginLeft: 16 }}
+                  >
+                    <Ionicons name="menu" size={24} color={COLORS.text} />
+                  </TouchableOpacity>
+                );
+              },
             }}
           />
         </Drawer>
