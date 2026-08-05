@@ -1,15 +1,19 @@
 import { COLORS } from "@/constants/colors";
 import { FavouritesProvider } from "@/context/FavouritesContext";
 import { Ionicons } from "@expo/vector-icons";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <FavouritesProvider>
+      <QueryClientProvider client={queryClient}>
+        <FavouritesProvider>
         <Drawer screenOptions={{
           headerShadowVisible: false,
           headerStyle: {
@@ -44,13 +48,7 @@ export default function RootLayout() {
               title: "Favourites",
             }}
           />
-          <Drawer.Screen
-            name="music"
-            options={{
-              drawerLabel: "Music Gallery",
-              title: "Music",
-            }}
-          />
+
           {/* Hide internal routes from drawer */}
           <Drawer.Screen
             name="book/[id]"
@@ -71,7 +69,8 @@ export default function RootLayout() {
             }}
           />
         </Drawer>
-      </FavouritesProvider>
+        </FavouritesProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

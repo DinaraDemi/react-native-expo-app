@@ -3,43 +3,33 @@ import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { Book, BookDetails } from "@/types/interfaces";
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+const fetchBookDetails = async (id: string): Promise<BookDetails> => {
+  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/works/${id}.json`);
+  if (!response.ok) throw new Error("Failed to fetch details");
+  return response.json();
+};
 
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
-  const [details, setDetails] = useState<BookDetails | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-
   const { isFavourite, toggleFavourite } = useFavouritesContext();
 
-  useEffect(() => {
-    if (!params.id) return;
-
-    const fetchBookDetails = async () => {
-      setIsLoading(true);
-      setError("");
-      try {
-        const response = await fetch(`https://openlibrary.org/works/${params.id}.json`);
-        if (!response.ok) throw new Error("Failed to fetch details");
-        const data: BookDetails = await response.json();
-        setDetails(data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load book details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBookDetails();
-  }, [params.id]);
+  const {
+    data: details,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["bookDetails", params.id],
+    queryFn: () => fetchBookDetails(params.id),
+    enabled: !!params.id,
+  });
 
   const coverId = params.coverId || details?.covers?.[0];
   const coverUrl = coverId
-    ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
+    ? `${process.env.EXPO_PUBLIC_COVERS_API_URL}/b/id/${coverId}-L.jpg`
     : null;
 
   const title = details?.title || params.title || "Book Details";
@@ -67,10 +57,10 @@ export default function BookDetailsScreen() {
     );
   }
 
-  if (error || !details) {
+  if (error || (!isLoading && !details)) {
     return (
       <View style={styles.container}>
-        <EmptyListComponent isLoading={false} message={error || "Book not found"} />
+        <EmptyListComponent isLoading={false} message={error ? "Failed to load book details" : "Book not found"} />
       </View>
     );
   }
@@ -107,7 +97,7 @@ export default function BookDetailsScreen() {
           <Text style={styles.description}>{descriptionText}</Text>
         </View>
 
-        {details.subjects && details.subjects.length > 0 && (
+        {details?.subjects && details.subjects.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Subjects</Text>
             <View style={styles.badgeContainer}>

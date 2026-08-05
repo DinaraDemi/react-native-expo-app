@@ -15,7 +15,7 @@ export const BookItem = ({ item }: BookItemProps) => {
 
   const coverId = item.cover_id || item.cover_i;
   const coverUrl = coverId
-    ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
+    ? `${process.env.EXPO_PUBLIC_COVERS_API_URL}/b/id/${coverId}-M.jpg`
     : null;
 
   const authorNames =

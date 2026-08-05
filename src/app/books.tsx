@@ -2,38 +2,32 @@ import { BookItem } from "@/components/BookItem";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { COLORS } from "@/constants/colors";
 import { Book } from "@/types/interfaces";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 
+const fetchBooks = async (): Promise<Book[]> => {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/subjects/detective.json`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch books");
+    }
+    const data = await response.json();
+    return data.works ?? [];
+};
+
 const Books = () => {
-    const [books, setBooks] = useState<Book[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
-    const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
-    const fetchBooks = async (isPullToRefresh = false) => {
-        if (!isPullToRefresh) setIsLoading(true);
-        setError("");
-        try {
-            const response = await fetch("https://openlibrary.org/subjects/detective.json");
-            const data = await response.json();
-            setBooks(data.works ?? []);
-        } catch (error) {
-            console.error(error);
-            setError("Failed to fetch books");
-        } finally {
-            setIsLoading(false);
-            setIsRefreshing(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchBooks();
-    }, []);
+    const {
+        data: books = [],
+        isLoading,
+        error,
+        refetch,
+        isRefetching,
+    } = useQuery({
+        queryKey: ["books"],
+        queryFn: fetchBooks,
+    });
 
     const handleRefresh = () => {
-        setIsRefreshing(true);
-        fetchBooks(true);
+        refetch();
     };
 
     return (
@@ -42,9 +36,12 @@ const Books = () => {
                 data={books}
                 renderItem={({ item }) => <BookItem item={item} />}
                 keyExtractor={(item) => item.key}
-                refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
+                refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />}
                 ListEmptyComponent={
-                    <EmptyListComponent isLoading={isLoading} message={error || "No books found"} />
+                    <EmptyListComponent
+                        isLoading={isLoading}
+                        message={error ? "Failed to fetch books" : "No books found"}
+                    />
                 }
             />
         </View>
