@@ -10,8 +10,8 @@ interface BookItemProps {
 }
 
 export const BookItem = ({ item }: BookItemProps) => {
-  const { isFavourite, toggleFavourite } = useFavouritesContext();
-  const fav = isFavourite(item.key);
+  const { favourites, toggleFavourite } = useFavouritesContext();
+  const fav = favourites.some((b) => b.key === item.key);
 
   const coverId = item.cover_id || item.cover_i;
   const coverUrl = coverId

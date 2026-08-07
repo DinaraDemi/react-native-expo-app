@@ -15,7 +15,7 @@ const fetchBookDetails = async (id: string): Promise<BookDetails> => {
 
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
-  const { isFavourite, toggleFavourite } = useFavouritesContext();
+  const { favourites, toggleFavourite } = useFavouritesContext();
 
   const {
     data: details,
@@ -43,7 +43,7 @@ export default function BookDetailsScreen() {
     author_name: [author],
     cover_id: coverId ? Number(coverId) : undefined,
   };
-  const fav = isFavourite(bookKey);
+  const fav = favourites.some((b) => b.key === bookKey);
 
   const descriptionText = typeof details?.description === "string"
     ? details.description
