@@ -1,11 +1,13 @@
+import { BookCover } from "@/components/BookCover";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
+import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { Book, BookDetails } from "@/types/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const fetchBookDetails = async (id: string): Promise<BookDetails> => {
   const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/works/${id}.json`);
@@ -52,7 +54,7 @@ export default function BookDetailsScreen() {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <EmptyListComponent isLoading={true} />
+        <BookDetailsSkeleton />
       </View>
     );
   }
@@ -69,13 +71,13 @@ export default function BookDetailsScreen() {
     <View style={styles.container}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View style={styles.header}>
-          {coverUrl ? (
-            <Image source={{ uri: coverUrl }} style={styles.cover} resizeMode="cover" />
-          ) : (
-            <View style={[styles.cover, styles.placeholder]}>
-              <Text style={styles.placeholderText}>No Cover Available</Text>
-            </View>
-          )}
+          <BookCover
+            uri={coverUrl}
+            width={150}
+            height={225}
+            borderRadius={8}
+            placeholderText="No Cover Available"
+          />
 
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.author}>{author}</Text>
@@ -125,21 +127,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     marginBottom: 24,
-  },
-  cover: {
-    width: 150,
-    height: 225,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  placeholder: {
-    backgroundColor: COLORS.itemBackground,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    color: COLORS.inactive,
-    fontSize: 14,
   },
   title: {
     color: COLORS.text,

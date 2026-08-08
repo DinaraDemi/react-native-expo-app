@@ -1,9 +1,10 @@
+import { BookCover } from "@/components/BookCover";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { Book } from "@/types/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface BookItemProps {
   item: Book;
@@ -38,13 +39,7 @@ export const BookItem = ({ item }: BookItemProps) => {
 
   return (
     <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.7}>
-      {coverUrl ? (
-        <Image source={{ uri: coverUrl }} style={styles.cover} resizeMode="cover" />
-      ) : (
-        <View style={[styles.cover, styles.placeholder]}>
-          <Text style={styles.placeholderText}>No Cover</Text>
-        </View>
-      )}
+      <BookCover uri={coverUrl} width={60} height={90} borderRadius={4} />
 
       <View style={styles.infoContainer}>
         <Text style={styles.title} numberOfLines={2}>
@@ -82,21 +77,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 16,
     alignItems: "center",
-  },
-  cover: {
-    width: 60,
-    height: 90,
-    borderRadius: 4,
-  },
-  placeholder: {
-    backgroundColor: COLORS.background,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    color: COLORS.inactive,
-    fontSize: 10,
-    textAlign: "center",
   },
   infoContainer: {
     flex: 1,

@@ -1,9 +1,11 @@
 import { BookItem } from "@/components/BookItem";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
+import { BookListSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { Book } from "@/types/interfaces";
+import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
-import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { RefreshControl, StyleSheet, View } from "react-native";
 
 const fetchBooks = async (): Promise<Book[]> => {
     const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/subjects/detective.json`);
@@ -30,16 +32,24 @@ const Books = () => {
         refetch();
     };
 
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <BookListSkeleton />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
-            <FlatList
+            <FlashList
                 data={books}
                 renderItem={({ item }) => <BookItem item={item} />}
                 keyExtractor={(item) => item.key}
                 refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />}
                 ListEmptyComponent={
                     <EmptyListComponent
-                        isLoading={isLoading}
+                        isLoading={false}
                         message={error ? "Failed to fetch books" : "No books found"}
                     />
                 }

@@ -1,15 +1,35 @@
 import { BookItem } from "@/components/BookItem";
+import { FavouritesSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
+import { useFavouritesStore } from "@/store/favouritesStore";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 const Favourites = () => {
   const { favourites } = useFavouritesContext();
+  const [hydrated, setHydrated] = useState(useFavouritesStore.persist.hasHydrated());
+
+  useEffect(() => {
+    const unsub = useFavouritesStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    return unsub;
+  }, []);
+
+  if (!hydrated) {
+    return (
+      <View style={styles.container}>
+        <FavouritesSkeleton />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         data={favourites}
         renderItem={({ item }) => <BookItem item={item} />}
         keyExtractor={(item) => item.key}
