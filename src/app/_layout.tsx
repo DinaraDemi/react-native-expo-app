@@ -1,3 +1,4 @@
+import { CartButton } from "@/components/CartButton";
 import { COLORS } from "@/constants/colors";
 import { FavouritesProvider } from "@/context/FavouritesContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ export default function RootLayout() {
           },
           headerTintColor: COLORS.text,
           headerTitleStyle: { fontWeight: "bold" },
+          headerRight: () => <CartButton />,
           drawerStyle: {
             backgroundColor: COLORS.background,
           },

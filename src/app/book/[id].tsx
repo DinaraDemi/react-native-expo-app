@@ -3,6 +3,7 @@ import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
+import { useCartStore } from "@/store/cartStore";
 import { Book, BookDetails } from "@/types/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +19,8 @@ const fetchBookDetails = async (id: string): Promise<BookDetails> => {
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
   const { favourites, toggleFavourite } = useFavouritesContext();
+  const addToCart = useCartStore((s) => s.addToCart);
+  const cartItems = useCartStore((s) => s.items);
 
   const {
     data: details,
@@ -46,6 +49,7 @@ export default function BookDetailsScreen() {
     cover_id: coverId ? Number(coverId) : undefined,
   };
   const fav = favourites.some((b) => b.key === bookKey);
+  const cartQuantity = cartItems.find((i) => i.book.key === bookKey)?.quantity ?? 0;
 
   const descriptionText = typeof details?.description === "string"
     ? details.description
@@ -90,6 +94,13 @@ export default function BookDetailsScreen() {
             />
             <Text style={[styles.favText, fav && styles.favTextActive]}>
               {fav ? "Remove from Favourites" : "Add to Favourites"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.cartButton} onPress={() => addToCart(bookForFav)}>
+            <Ionicons name="cart-outline" size={24} color={COLORS.text} />
+            <Text style={styles.cartText}>
+              {cartQuantity > 0 ? `In Cart (${cartQuantity})` : "Add to Cart"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -157,6 +168,20 @@ const styles = StyleSheet.create({
   },
   favTextActive: {
     color: COLORS.favourite,
+  },
+  cartButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: COLORS.itemBackground,
+  },
+  cartText: {
+    color: COLORS.text,
+    fontSize: 14,
   },
   section: {
     marginBottom: 24,
