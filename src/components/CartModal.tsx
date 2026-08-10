@@ -5,6 +5,9 @@ import { getBookCoverUrl } from "@/utils/bookCover";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ReanimatedSwipeable, {
+  SwipeDirection,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 
 interface CartModalProps {
   visible: boolean;
@@ -52,43 +55,63 @@ export const CartModal = ({ visible, onClose }: CartModalProps) => {
                   "Unknown Author";
 
                 return (
-                  <View style={styles.itemRow}>
-                    <BookCover uri={coverUrl} width={40} height={60} borderRadius={4} />
-                    <View style={styles.itemInfo}>
-                      <Text style={styles.itemTitle} numberOfLines={2}>
-                        {item.book.title}
-                      </Text>
-                      <Text style={styles.itemAuthor} numberOfLines={1}>
-                        {authorNames}
-                      </Text>
-                    </View>
-
-                    <View style={styles.quantityControls}>
+                  <ReanimatedSwipeable
+                    friction={2}
+                    rightThreshold={40}
+                    overshootRight={false}
+                    renderRightActions={() => (
                       <TouchableOpacity
-                        style={styles.quantityButton}
-                        onPress={() => updateQuantity(item.book.key, item.quantity - 1)}
-                        hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                        style={styles.deleteAction}
+                        onPress={() => removeFromCart(item.book.key)}
                       >
-                        <Ionicons name="remove" size={16} color={COLORS.text} />
+                        <Ionicons name="trash" size={22} color="#fff" />
+                        <Text style={styles.deleteActionText}>Delete</Text>
                       </TouchableOpacity>
-                      <Text style={styles.quantityText}>{item.quantity}</Text>
+                    )}
+                    onSwipeableOpen={(direction) => {
+                      if (direction === SwipeDirection.RIGHT) {
+                        removeFromCart(item.book.key);
+                      }
+                    }}
+                  >
+                    <View style={styles.itemRow}>
+                      <BookCover uri={coverUrl} width={40} height={60} borderRadius={4} />
+                      <View style={styles.itemInfo}>
+                        <Text style={styles.itemTitle} numberOfLines={2}>
+                          {item.book.title}
+                        </Text>
+                        <Text style={styles.itemAuthor} numberOfLines={1}>
+                          {authorNames}
+                        </Text>
+                      </View>
+
+                      <View style={styles.quantityControls}>
+                        <TouchableOpacity
+                          style={styles.quantityButton}
+                          onPress={() => updateQuantity(item.book.key, item.quantity - 1)}
+                          hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                        >
+                          <Ionicons name="remove" size={16} color={COLORS.text} />
+                        </TouchableOpacity>
+                        <Text style={styles.quantityText}>{item.quantity}</Text>
+                        <TouchableOpacity
+                          style={styles.quantityButton}
+                          onPress={() => updateQuantity(item.book.key, item.quantity + 1)}
+                          hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                        >
+                          <Ionicons name="add" size={16} color={COLORS.text} />
+                        </TouchableOpacity>
+                      </View>
+
                       <TouchableOpacity
-                        style={styles.quantityButton}
-                        onPress={() => updateQuantity(item.book.key, item.quantity + 1)}
-                        hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                        style={styles.deleteButton}
+                        onPress={() => removeFromCart(item.book.key)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                       >
-                        <Ionicons name="add" size={16} color={COLORS.text} />
+                        <Ionicons name="trash-outline" size={20} color={COLORS.favourite} />
                       </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => removeFromCart(item.book.key)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Ionicons name="trash-outline" size={20} color={COLORS.favourite} />
-                    </TouchableOpacity>
-                  </View>
+                  </ReanimatedSwipeable>
                 );
               }}
             />
@@ -200,5 +223,19 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 4,
+  },
+  deleteAction: {
+    width: 90,
+    marginVertical: 4,
+    borderRadius: 8,
+    backgroundColor: COLORS.favourite,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+  },
+  deleteActionText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });
