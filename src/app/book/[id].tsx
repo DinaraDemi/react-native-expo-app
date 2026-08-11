@@ -6,14 +6,36 @@ import { useFavouritesContext } from "@/context/FavouritesContext";
 import { useCartStore } from "@/store/cartStore";
 import { Book, BookDetails } from "@/types/interfaces";
 import { Ionicons } from "@expo/vector-icons";
+import { getBookDetailDeepLink } from "@/utils/deepLinks";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Alert, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const fetchBookDetails = async (id: string): Promise<BookDetails> => {
   const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/works/${id}.json`);
   if (!response.ok) throw new Error("Failed to fetch details");
   return response.json();
+};
+
+/**
+ * Web-only fallback: copy a string to the clipboard when the Web Share API is
+ * unavailable (e.g. desktop Chrome/Firefox/Edge, even on localhost).
+ */
+const copyToClipboard = async (text: string): Promise<void> => {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  // Legacy fallback for browsers without the async Clipboard API.
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
 };
 
 export default function BookDetailsScreen() {
@@ -54,6 +76,62 @@ export default function BookDetailsScreen() {
   const descriptionText = typeof details?.description === "string"
     ? details.description
     : details?.description?.value || "No description available for this book.";
+
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+
+  const deepLink = getBookDetailDeepLink({
+    id: params.id,
+    coverId,
+    author,
+    title,
+  });
+
+  const showShareFeedback = (message: string) => {
+    setShareFeedback(message);
+    setTimeout(() => {
+      setShareFeedback((current) => (current === message ? null : current));
+    }, 3000);
+  };
+
+  const handleShare = async () => {
+    if (!params.id) return;
+    setShareFeedback(null);
+
+    const message = `Check out this book: ${title} by ${author}`;
+
+    // Web: the Web Share API is only available in some browsers, so fall back to
+    // copying the link when it is not supported (desktop Chrome/Firefox/Edge).
+    // react-native-web's Alert/Share are unreliable on web, so we handle it here.
+    if (Platform.OS === "web") {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        try {
+          await navigator.share({ title: title || undefined, text: message, url: deepLink });
+          return;
+        } catch {
+          // User cancelled the share sheet (or it failed) — nothing else to do.
+          return;
+        }
+      }
+
+      try {
+        await copyToClipboard(deepLink);
+        showShareFeedback("Link copied to clipboard");
+      } catch {
+        showShareFeedback("Couldn't share or copy the link.");
+      }
+      return;
+    }
+
+    try {
+      await Share.share({
+        message,
+        url: deepLink,
+        title: title || undefined,
+      });
+    } catch {
+      Alert.alert("Share failed", "Unable to open the share sheet right now.");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -103,6 +181,15 @@ export default function BookDetailsScreen() {
               {cartQuantity > 0 ? `In Cart (${cartQuantity})` : "Add to Cart"}
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
+            <Ionicons name="share-social-outline" size={22} color={COLORS.text} />
+            <Text style={styles.shareText}>Share Book</Text>
+          </TouchableOpacity>
+
+          {shareFeedback ? (
+            <Text style={styles.shareFeedback}>{shareFeedback}</Text>
+          ) : null}
         </View>
 
         <View style={styles.section}>
@@ -182,6 +269,29 @@ const styles = StyleSheet.create({
   cartText: {
     color: COLORS.text,
     fontSize: 14,
+  },
+  shareButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.text,
+    backgroundColor: "transparent",
+  },
+  shareText: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  shareFeedback: {
+    color: COLORS.text,
+    fontSize: 13,
+    marginTop: 10,
+    textAlign: "center",
   },
   section: {
     marginBottom: 24,
