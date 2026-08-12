@@ -3,7 +3,7 @@ import { BookCover } from "@/components/BookCover";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
-import { useFavouritesContext } from "@/context/FavouritesContext";
+import { useFavouritesStore } from "@/store/favouritesStore";
 import { useCartStore } from "@/store/cartStore";
 import { Book } from "@/types/interfaces";
 import { getBookCoverUrl } from "@/utils/bookCover";
@@ -36,7 +36,8 @@ const copyToClipboard = async (text: string): Promise<void> => {
 
 export default function BookDetailsScreen() {
   const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
-  const { favourites, toggleFavourite } = useFavouritesContext();
+  const favourites = useFavouritesStore((s) => s.favourites);
+  const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite);
   const addToCart = useCartStore((s) => s.addToCart);
   const cartItems = useCartStore((s) => s.items);
 

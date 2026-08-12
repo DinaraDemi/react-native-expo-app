@@ -1,6 +1,6 @@
 import { BookCover } from "@/components/BookCover";
 import { COLORS } from "@/constants/colors";
-import { useFavouritesContext } from "@/context/FavouritesContext";
+import { useFavouritesStore } from "@/store/favouritesStore";
 import { Book } from "@/types/interfaces";
 import { getBookAuthorName } from "@/utils/book";
 import { getBookCoverUrl } from "@/utils/bookCover";
@@ -13,7 +13,8 @@ interface BookItemProps {
 }
 
 export const BookItem = ({ item }: BookItemProps) => {
-  const { favourites, toggleFavourite } = useFavouritesContext();
+  const favourites = useFavouritesStore((s) => s.favourites);
+  const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite);
   const fav = favourites.some((b) => b.key === item.key);
 
   const coverId = item.cover_id || item.cover_i;

@@ -1,7 +1,6 @@
 import { CartButton } from "@/components/CartButton";
 import { MenuButton } from "@/components/MenuButton";
 import { COLORS } from "@/constants/colors";
-import { FavouritesProvider } from "@/context/FavouritesContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Drawer } from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -12,7 +11,6 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <FavouritesProvider>
         <Drawer screenOptions={{
           headerShadowVisible: false,
           headerStyle: {
@@ -59,7 +57,6 @@ export default function RootLayout() {
             }}
           />
         </Drawer>
-        </FavouritesProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

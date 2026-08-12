@@ -1,7 +1,6 @@
 import { BookItem } from "@/components/BookItem";
 import { FavouritesSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
-import { useFavouritesContext } from "@/context/FavouritesContext";
 import { useFavouritesStore } from "@/store/favouritesStore";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
@@ -9,7 +8,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 const Favourites = () => {
-  const { favourites } = useFavouritesContext();
+  const favourites = useFavouritesStore((s) => s.favourites);
   const [hydrated, setHydrated] = useState(useFavouritesStore.persist.hasHydrated());
 
   useEffect(() => {
