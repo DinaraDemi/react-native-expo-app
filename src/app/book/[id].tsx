@@ -5,8 +5,8 @@ import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesStore } from "@/store/favouritesStore";
 import { useCartStore } from "@/store/cartStore";
-import { Book } from "@/types/interfaces";
 import { getBookCoverUrl } from "@/utils/bookCover";
+import { buildBookFromDetailMeta } from "@/utils/book";
 import { Ionicons } from "@expo/vector-icons";
 import { getBookDetailDeepLink } from "@/utils/deepLinks";
 import { useQuery } from "@tanstack/react-query";
@@ -62,12 +62,12 @@ export default function BookDetailsScreen() {
 
   // Reconstruct a minimal Book object for the favourites hook
   const bookKey = `/works/${params.id}`;
-  const bookForFav: Book = {
-    key: bookKey,
-    title: title,
-    author_name: [author],
-    cover_id: coverId ? Number(coverId) : undefined,
-  };
+  const bookForFav = buildBookFromDetailMeta({
+    id: params.id,
+    title,
+    author: params.author,
+    coverId,
+  });
   const fav = favourites.some((b) => b.key === bookKey);
   const cartQuantity = cartItems.find((i) => i.book.key === bookKey)?.quantity ?? 0;
 
