@@ -32,9 +32,8 @@ export interface BookDetails {
 }
 
 
-export interface BookApiResponse {
-    numFound: number;
-    start: number;
-    numFoundExact: boolean;
-    docs: Book[];
+export interface SubjectsApiResponse {
+    name?: string;
+    work_count?: number;
+    works: Book[];
 }

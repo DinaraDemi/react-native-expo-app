@@ -1,20 +1,11 @@
+import { fetchBooks } from "@/api/books";
 import { BookItem } from "@/components/BookItem";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { BookListSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
-import { Book } from "@/types/interfaces";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { RefreshControl, StyleSheet, View } from "react-native";
-
-const fetchBooks = async (): Promise<Book[]> => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/subjects/detective.json`);
-    if (!response.ok) {
-        throw new Error("Failed to fetch books");
-    }
-    const data = await response.json();
-    return data.works ?? [];
-};
 
 const Books = () => {
     const {

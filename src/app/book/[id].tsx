@@ -1,10 +1,11 @@
+import { fetchBookDetails } from "@/api/books";
 import { BookCover } from "@/components/BookCover";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
 import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { useCartStore } from "@/store/cartStore";
-import { Book, BookDetails } from "@/types/interfaces";
+import { Book } from "@/types/interfaces";
 import { getBookCoverUrl } from "@/utils/bookCover";
 import { Ionicons } from "@expo/vector-icons";
 import { getBookDetailDeepLink } from "@/utils/deepLinks";
@@ -12,12 +13,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const fetchBookDetails = async (id: string): Promise<BookDetails> => {
-  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/works/${id}.json`);
-  if (!response.ok) throw new Error("Failed to fetch details");
-  return response.json();
-};
 
 /**
  * Web-only fallback: copy a string to the clipboard when the Web Share API is
