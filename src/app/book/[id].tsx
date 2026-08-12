@@ -1,6 +1,7 @@
 import { fetchBookDetails } from "@/api/books";
 import { BookCover } from "@/components/BookCover";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
+import { ErrorState } from "@/components/ErrorState";
 import { BookDetailsSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesStore } from "@/store/favouritesStore";
@@ -59,6 +60,7 @@ export default function BookDetailsScreen() {
     data: details,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["bookDetails", params.id],
     queryFn: () => fetchBookDetails(params.id),
@@ -154,10 +156,18 @@ export default function BookDetailsScreen() {
     );
   }
 
-  if (error || (!isLoading && !details)) {
+  if (error) {
     return (
       <View style={styles.container}>
-        <EmptyListComponent message={error ? "Failed to load book details" : "Book not found"} />
+        <ErrorState message="Failed to load book details" onRetry={() => refetch()} />
+      </View>
+    );
+  }
+
+  if (!isLoading && !details) {
+    return (
+      <View style={styles.container}>
+        <EmptyListComponent message="Book not found" />
       </View>
     );
   }

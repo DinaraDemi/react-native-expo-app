@@ -29,19 +29,18 @@ A books browsing app built with **Expo SDK 57** (React Native + TypeScript) and 
 
 ```
 src/
+├── api/                      # OpenLibrary data layer (typed fetchers + error type)
 ├── app/                      # expo-router routes (file-based routing)
-│   ├── _layout.tsx           # Root layout: QueryClient + FavouritesProvider + Drawer
+│   ├── _layout.tsx           # Root layout: QueryClient + Drawer
 │   ├── index.tsx             # Redirects to /books
 │   ├── books.tsx             # Book list screen
 │   ├── favourites.tsx        # Favourites screen
 │   └── book/[id].tsx         # Book detail screen
-├── components/               # BookCover, BookItem, CartButton, CartModal, EmptyListComponent, Skeleton
+├── components/               # BookCover, BookItem, CartButton, CartModal, EmptyListComponent, ErrorState, MenuButton, Skeleton
 ├── constants/colors.ts       # Dark-theme palette
-├── context/                  # FavouritesContext
-├── hooks/                    # useFavourites
 ├── store/                    # Zustand stores (cart, favourites) with MMKV persistence
 ├── types/interfaces.ts       # Book / BookDetails API types
-└── utils/                    # bookCover.ts, deepLinks.ts
+└── utils/                    # book.ts, bookCover.ts, deepLinks.ts, mmkvStorage.ts
 ```
 
 ## 🚀 Getting started

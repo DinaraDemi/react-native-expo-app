@@ -1,6 +1,7 @@
 import { fetchBooks } from "@/api/books";
 import { BookItem } from "@/components/BookItem";
 import { EmptyListComponent } from "@/components/EmptyListComponent";
+import { ErrorState } from "@/components/ErrorState";
 import { BookListSkeleton } from "@/components/Skeleton";
 import { COLORS } from "@/constants/colors";
 import { FlashList } from "@shopify/flash-list";
@@ -39,7 +40,11 @@ const Books = () => {
         keyExtractor={(item) => item.key}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />}
         ListEmptyComponent={
-          <EmptyListComponent message={error ? "Failed to fetch books" : "No books found"} />
+          error ? (
+            <ErrorState message="Failed to fetch books" onRetry={handleRefresh} />
+          ) : (
+            <EmptyListComponent message="No books found" />
+          )
         }
       />
     </View>
