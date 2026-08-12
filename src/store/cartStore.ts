@@ -1,22 +1,9 @@
 import { Book } from "@/types/interfaces";
-import { createMMKV } from "react-native-mmkv";
+import { createMmkvStorage } from "@/utils/mmkvStorage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const storage = createMMKV({ id: "cart-storage" });
-
-const mmkvStorage = {
-  getItem: (name: string) => {
-    const value = storage.getString(name);
-    return value ?? null;
-  },
-  setItem: (name: string, value: string) => {
-    storage.set(name, value);
-  },
-  removeItem: (name: string) => {
-    storage.remove(name);
-  },
-};
+const storage = createMmkvStorage("cart-storage");
 
 export interface CartItem {
   book: Book;
@@ -69,7 +56,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "cart-storage",
-      storage: createJSONStorage(() => mmkvStorage),
+      storage: createJSONStorage(() => storage),
     }
   )
 );

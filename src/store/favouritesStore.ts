@@ -1,22 +1,9 @@
 import { Book } from "@/types/interfaces";
-import { createMMKV } from "react-native-mmkv";
+import { createMmkvStorage } from "@/utils/mmkvStorage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const storage = createMMKV({ id: "favourites-storage" });
-
-const mmkvStorage = {
-  getItem: (name: string) => {
-    const value = storage.getString(name);
-    return value ?? null;
-  },
-  setItem: (name: string, value: string) => {
-    storage.set(name, value);
-  },
-  removeItem: (name: string) => {
-    storage.remove(name);
-  },
-};
+const storage = createMmkvStorage("favourites-storage");
 
 interface FavouritesState {
   favourites: Book[];
@@ -50,7 +37,7 @@ export const useFavouritesStore = create<FavouritesState>()(
     }),
     {
       name: "favourites-storage",
-      storage: createJSONStorage(() => mmkvStorage),
+      storage: createJSONStorage(() => storage),
     }
   )
 );

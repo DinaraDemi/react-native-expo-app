@@ -1,6 +1,7 @@
 import { BookCover } from "@/components/BookCover";
 import { COLORS } from "@/constants/colors";
 import { useCartStore } from "@/store/cartStore";
+import { getBookAuthorName } from "@/utils/book";
 import { getBookCoverUrl } from "@/utils/bookCover";
 import { Ionicons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
@@ -49,10 +50,7 @@ export const CartModal = ({ visible, onClose }: CartModalProps) => {
               contentContainerStyle={styles.listContent}
               renderItem={({ item }) => {
                 const coverUrl = getBookCoverUrl(item.book, "S");
-                const authorNames =
-                  item.book.authors?.map((a) => a.name).join(", ") ||
-                  item.book.author_name?.join(", ") ||
-                  "Unknown Author";
+                const authorNames = getBookAuthorName(item.book);
 
                 return (
                   <ReanimatedSwipeable

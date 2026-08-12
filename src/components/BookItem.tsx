@@ -2,6 +2,8 @@ import { BookCover } from "@/components/BookCover";
 import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { Book } from "@/types/interfaces";
+import { getBookAuthorName } from "@/utils/book";
+import { getBookCoverUrl } from "@/utils/bookCover";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -15,14 +17,8 @@ export const BookItem = ({ item }: BookItemProps) => {
   const fav = favourites.some((b) => b.key === item.key);
 
   const coverId = item.cover_id || item.cover_i;
-  const coverUrl = coverId
-    ? `${process.env.EXPO_PUBLIC_COVERS_API_URL}/b/id/${coverId}-M.jpg`
-    : null;
-
-  const authorNames =
-    item.authors?.map((a) => a.name).join(", ") ||
-    item.author_name?.join(", ") ||
-    "Unknown Author";
+  const coverUrl = getBookCoverUrl(item, "M");
+  const authorNames = getBookAuthorName(item);
 
   const handlePress = () => {
     const workId = item.key.split("/").pop() || item.key;

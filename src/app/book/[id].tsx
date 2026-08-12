@@ -5,6 +5,7 @@ import { COLORS } from "@/constants/colors";
 import { useFavouritesContext } from "@/context/FavouritesContext";
 import { useCartStore } from "@/store/cartStore";
 import { Book, BookDetails } from "@/types/interfaces";
+import { getBookCoverUrl } from "@/utils/bookCover";
 import { Ionicons } from "@expo/vector-icons";
 import { getBookDetailDeepLink } from "@/utils/deepLinks";
 import { useQuery } from "@tanstack/react-query";
@@ -55,9 +56,10 @@ export default function BookDetailsScreen() {
   });
 
   const coverId = params.coverId || details?.covers?.[0];
-  const coverUrl = coverId
-    ? `${process.env.EXPO_PUBLIC_COVERS_API_URL}/b/id/${coverId}-L.jpg`
-    : null;
+  const coverUrl = getBookCoverUrl(
+    { cover_id: coverId !== undefined ? Number(coverId) : undefined },
+    "L"
+  );
 
   const title = details?.title || params.title || "Book Details";
   const author = params.author || "Unknown Author";
