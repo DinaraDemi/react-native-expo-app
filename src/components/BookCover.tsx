@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SkeletonBlock } from "./Skeleton";
 
@@ -19,20 +19,57 @@ export const BookCover = ({
   borderRadius = 4,
   placeholderText = "No Cover",
 }: BookCoverProps) => {
+  // Keying by `uri` remounts the inner component whenever the url changes (e.g.
+  // FlashList cell recycling), so image load state resets without any effect.
+  if (!uri) {
+    return (
+      <Placeholder
+        width={width}
+        height={height}
+        borderRadius={borderRadius}
+        text={placeholderText}
+      />
+    );
+  }
+
+  return (
+    <CoverImage
+      key={uri}
+      uri={uri}
+      width={width}
+      height={height}
+      borderRadius={borderRadius}
+      placeholderText={placeholderText}
+    />
+  );
+};
+
+interface CoverImageProps {
+  uri: string;
+  width: number;
+  height: number;
+  borderRadius: number;
+  placeholderText: string;
+}
+
+const CoverImage = ({
+  uri,
+  width,
+  height,
+  borderRadius,
+  placeholderText,
+}: CoverImageProps) => {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  // Reset state when the uri changes (e.g. FlashList cell recycling)
-  useEffect(() => {
-    setLoaded(false);
-    setFailed(false);
-  }, [uri]);
-
-  if (!uri || failed) {
+  if (failed) {
     return (
-      <View style={[styles.placeholder, { width, height, borderRadius }]}>
-        <Text style={styles.placeholderText}>{placeholderText}</Text>
-      </View>
+      <Placeholder
+        width={width}
+        height={height}
+        borderRadius={borderRadius}
+        text={placeholderText}
+      />
     );
   }
 
@@ -50,6 +87,21 @@ export const BookCover = ({
         onLoad={() => setLoaded(true)}
         onError={() => setFailed(true)}
       />
+    </View>
+  );
+};
+
+interface PlaceholderProps {
+  width: number;
+  height: number;
+  borderRadius: number;
+  text: string;
+}
+
+const Placeholder = ({ width, height, borderRadius, text }: PlaceholderProps) => {
+  return (
+    <View style={[styles.placeholder, { width, height, borderRadius }]}>
+      <Text style={styles.placeholderText}>{text}</Text>
     </View>
   );
 };

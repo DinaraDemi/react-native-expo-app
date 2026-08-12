@@ -1,12 +1,10 @@
 import { CartButton } from "@/components/CartButton";
+import { MenuButton } from "@/components/MenuButton";
 import { COLORS } from "@/constants/colors";
 import { FavouritesProvider } from "@/context/FavouritesContext";
-import { Ionicons } from "@expo/vector-icons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useNavigation } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { TouchableOpacity } from "react-native";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient();
 
@@ -57,17 +55,7 @@ export default function RootLayout() {
             options={{
               drawerItemStyle: { display: 'none' },
               title: "Book Details",
-              headerLeft: () => {
-                const navigation = useNavigation();
-                return (
-                  <TouchableOpacity 
-                    onPress={() => (navigation as any).toggleDrawer()}
-                    style={{ marginLeft: 16 }}
-                  >
-                    <Ionicons name="menu" size={24} color={COLORS.text} />
-                  </TouchableOpacity>
-                );
-              },
+              headerLeft: () => <MenuButton />,
             }}
           />
         </Drawer>
