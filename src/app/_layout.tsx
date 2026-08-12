@@ -11,20 +11,22 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <Drawer screenOptions={{
-          headerShadowVisible: false,
-          headerStyle: {
-            backgroundColor: COLORS.background
-          },
-          headerTintColor: COLORS.text,
-          headerTitleStyle: { fontWeight: "bold" },
-          headerRight: () => <CartButton />,
-          drawerStyle: {
-            backgroundColor: COLORS.background,
-          },
-          drawerActiveTintColor: COLORS.text,
-          drawerInactiveTintColor: COLORS.inactive,
-        }}>
+        <Drawer
+          screenOptions={{
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: COLORS.background,
+            },
+            headerTintColor: COLORS.text,
+            headerTitleStyle: { fontWeight: "bold" },
+            headerRight: () => <CartButton />,
+            drawerStyle: {
+              backgroundColor: COLORS.background,
+            },
+            drawerActiveTintColor: COLORS.text,
+            drawerInactiveTintColor: COLORS.inactive,
+          }}
+        >
           <Drawer.Screen
             name="index"
             options={{
@@ -51,7 +53,7 @@ export default function RootLayout() {
           <Drawer.Screen
             name="book/[id]"
             options={{
-              drawerItemStyle: { display: 'none' },
+              drawerItemStyle: { display: "none" },
               title: "Book Details",
               headerLeft: () => <MenuButton />,
             }}

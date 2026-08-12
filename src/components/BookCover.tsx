@@ -52,13 +52,7 @@ interface CoverImageProps {
   placeholderText: string;
 }
 
-const CoverImage = ({
-  uri,
-  width,
-  height,
-  borderRadius,
-  placeholderText,
-}: CoverImageProps) => {
+const CoverImage = ({ uri, width, height, borderRadius, placeholderText }: CoverImageProps) => {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -75,9 +69,7 @@ const CoverImage = ({
 
   return (
     <View style={[styles.container, { width, height, borderRadius }]}>
-      {!loaded && (
-        <SkeletonBlock width="100%" height="100%" borderRadius={borderRadius} />
-      )}
+      {!loaded && <SkeletonBlock width="100%" height="100%" borderRadius={borderRadius} />}
       <Image
         source={{ uri }}
         style={StyleSheet.absoluteFill}

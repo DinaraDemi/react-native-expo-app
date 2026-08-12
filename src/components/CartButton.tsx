@@ -26,12 +26,12 @@ export const CartButton = () => {
     if (totalQuantity > prev) {
       badgeScale.value = withSequence(
         withSpring(1.45, { damping: 5, stiffness: 280 }),
-        withSpring(1, { damping: 10, stiffness: 240 })
+        withSpring(1, { damping: 10, stiffness: 240 }),
       );
     } else if (totalQuantity > 0) {
       badgeScale.value = withSequence(
         withSpring(0.85, { damping: 12, stiffness: 260 }),
-        withSpring(1, { damping: 12, stiffness: 240 })
+        withSpring(1, { damping: 12, stiffness: 240 }),
       );
     }
 
@@ -52,9 +52,7 @@ export const CartButton = () => {
         <Ionicons name="cart-outline" size={24} color={COLORS.text} />
         {totalQuantity > 0 && (
           <Animated.View style={[styles.badge, badgeAnimatedStyle]}>
-            <Text style={styles.badgeText}>
-              {totalQuantity > 99 ? "99+" : totalQuantity}
-            </Text>
+            <Text style={styles.badgeText}>{totalQuantity > 99 ? "99+" : totalQuantity}</Text>
           </Animated.View>
         )}
       </TouchableOpacity>

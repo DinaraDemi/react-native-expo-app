@@ -5,9 +5,7 @@ interface EmptyListComponentProps {
   message?: string;
 }
 
-export const EmptyListComponent = ({
-  message = "No items found",
-}: EmptyListComponentProps) => {
+export const EmptyListComponent = ({ message = "No items found" }: EmptyListComponentProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{message}</Text>

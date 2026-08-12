@@ -15,10 +15,7 @@ export class OpenLibraryError extends Error {
 const request = async <T>(url: string): Promise<T> => {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new OpenLibraryError(
-      `OpenLibrary request failed (${response.status})`,
-      response.status
-    );
+    throw new OpenLibraryError(`OpenLibrary request failed (${response.status})`, response.status);
   }
   return response.json() as T;
 };

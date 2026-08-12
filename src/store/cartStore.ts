@@ -27,7 +27,7 @@ export const useCartStore = create<CartState>()(
         if (existing) {
           set((state) => ({
             items: state.items.map((i) =>
-              i.book.key === book.key ? { ...i, quantity: i.quantity + 1 } : i
+              i.book.key === book.key ? { ...i, quantity: i.quantity + 1 } : i,
             ),
           }));
         } else {
@@ -47,9 +47,7 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set((state) => ({
-          items: state.items.map((i) =>
-            i.book.key === key ? { ...i, quantity } : i
-          ),
+          items: state.items.map((i) => (i.book.key === key ? { ...i, quantity } : i)),
         }));
       },
       clearCart: () => set({ items: [] }),
@@ -57,8 +55,8 @@ export const useCartStore = create<CartState>()(
     {
       name: "cart-storage",
       storage: createJSONStorage(() => storage),
-    }
-  )
+    },
+  ),
 );
 
 export const useCartTotalQuantity = () =>

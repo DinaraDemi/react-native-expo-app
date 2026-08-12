@@ -12,7 +12,16 @@ import { getBookDetailDeepLink } from "@/utils/deepLinks";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Alert, Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 /**
  * Web-only fallback: copy a string to the clipboard when the Web Share API is
@@ -35,7 +44,12 @@ const copyToClipboard = async (text: string): Promise<void> => {
 };
 
 export default function BookDetailsScreen() {
-  const params = useLocalSearchParams<{ id: string; coverId?: string; author?: string; title?: string }>();
+  const params = useLocalSearchParams<{
+    id: string;
+    coverId?: string;
+    author?: string;
+    title?: string;
+  }>();
   const favourites = useFavouritesStore((s) => s.favourites);
   const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite);
   const addToCart = useCartStore((s) => s.addToCart);
@@ -54,7 +68,7 @@ export default function BookDetailsScreen() {
   const coverId = params.coverId || details?.covers?.[0];
   const coverUrl = getBookCoverUrl(
     { cover_id: coverId !== undefined ? Number(coverId) : undefined },
-    "L"
+    "L",
   );
 
   const title = details?.title || params.title || "Book Details";
@@ -71,9 +85,10 @@ export default function BookDetailsScreen() {
   const fav = favourites.some((b) => b.key === bookKey);
   const cartQuantity = cartItems.find((i) => i.book.key === bookKey)?.quantity ?? 0;
 
-  const descriptionText = typeof details?.description === "string"
-    ? details.description
-    : details?.description?.value || "No description available for this book.";
+  const descriptionText =
+    typeof details?.description === "string"
+      ? details.description
+      : details?.description?.value || "No description available for this book.";
 
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
 
@@ -185,9 +200,7 @@ export default function BookDetailsScreen() {
             <Text style={styles.shareText}>Share Book</Text>
           </TouchableOpacity>
 
-          {shareFeedback ? (
-            <Text style={styles.shareFeedback}>{shareFeedback}</Text>
-          ) : null}
+          {shareFeedback ? <Text style={styles.shareFeedback}>{shareFeedback}</Text> : null}
         </View>
 
         <View style={styles.section}>

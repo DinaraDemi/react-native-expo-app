@@ -28,12 +28,7 @@ export const SkeletonBlock = ({
 }: SkeletonBlockProps) => {
   return (
     <ShimmerContainer style={style}>
-      <Animated.View
-        style={[
-          styles.block,
-          { width, height, borderRadius },
-        ]}
-      />
+      <Animated.View style={[styles.block, { width, height, borderRadius }]} />
     </ShimmerContainer>
   );
 };
@@ -51,14 +46,12 @@ const ShimmerContainer = ({
     progress.value = withRepeat(
       withTiming(1, { duration: 1200, easing: Easing.linear }),
       -1,
-      false
+      false,
     );
   }, [progress]);
 
   const shimmerStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: interpolate(progress.value, [0, 1], [-220, 420]) },
-    ],
+    transform: [{ translateX: interpolate(progress.value, [0, 1], [-220, 420]) }],
   }));
 
   return (
