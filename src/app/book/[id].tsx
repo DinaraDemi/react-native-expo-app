@@ -142,7 +142,7 @@ export default function BookDetailsScreen() {
   if (error || (!isLoading && !details)) {
     return (
       <View style={styles.container}>
-        <EmptyListComponent isLoading={false} message={error ? "Failed to load book details" : "Book not found"} />
+        <EmptyListComponent message={error ? "Failed to load book details" : "Book not found"} />
       </View>
     );
   }

@@ -1,22 +1,16 @@
 import { COLORS } from "@/constants/colors";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface EmptyListComponentProps {
-  isLoading: boolean;
   message?: string;
 }
 
 export const EmptyListComponent = ({
-  isLoading,
   message = "No items found",
 }: EmptyListComponentProps) => {
   return (
     <View style={styles.container}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={COLORS.text} />
-      ) : (
-        <Text style={styles.text}>{message}</Text>
-      )}
+      <Text style={styles.text}>{message}</Text>
     </View>
   );
 };

@@ -40,7 +40,6 @@ const Books = () => {
                 refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />}
                 ListEmptyComponent={
                     <EmptyListComponent
-                        isLoading={false}
                         message={error ? "Failed to fetch books" : "No books found"}
                     />
                 }
