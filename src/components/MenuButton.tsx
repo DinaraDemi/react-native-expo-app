@@ -1,5 +1,5 @@
 import { COLORS } from "@/constants/colors";
-import { DrawerActions } from "@react-navigation/native";
+import { DrawerActions } from "expo-router/react-navigation";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { TouchableOpacity } from "react-native";
