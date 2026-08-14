@@ -1,65 +1,63 @@
-import { CartButton } from "@/components/CartButton";
-import { MenuButton } from "@/components/MenuButton";
 import { COLORS } from "@/constants/colors";
+import { useAuthStore } from "@/store/authStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Drawer } from "expo-router/drawer";
+import { DarkTheme, Stack, ThemeProvider } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient();
 
+function RootNavigator() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={isAuthenticated}>
+        <Stack.Screen name="(drawer)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="login" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
 export default function RootLayout() {
+  
+  const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
+
+  useEffect(() => {
+    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+    return unsubscribe;
+  }, []);
+
+  if (!hydrated) {
+    return (
+      <View style={styles.splash}>
+        <ActivityIndicator size="large" color={COLORS.text} />
+      </View>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <Drawer
-          screenOptions={{
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: COLORS.background,
-            },
-            headerTintColor: COLORS.text,
-            headerTitleStyle: { fontWeight: "bold" },
-            headerRight: () => <CartButton />,
-            drawerStyle: {
-              backgroundColor: COLORS.background,
-            },
-            drawerActiveTintColor: COLORS.text,
-            drawerInactiveTintColor: COLORS.inactive,
-          }}
-        >
-          <Drawer.Screen
-            name="index"
-            options={{
-              drawerLabel: "Home",
-              title: "Home",
-            }}
-          />
-          <Drawer.Screen
-            name="books"
-            options={{
-              drawerLabel: "Books List",
-              title: "Books",
-            }}
-          />
-          <Drawer.Screen
-            name="favourites"
-            options={{
-              drawerLabel: "My Favourites",
-              title: "Favourites",
-            }}
-          />
-
-          {/* Hide internal routes from drawer */}
-          <Drawer.Screen
-            name="book/[id]"
-            options={{
-              drawerItemStyle: { display: "none" },
-              title: "Book Details",
-              headerLeft: () => <MenuButton />,
-            }}
-          />
-        </Drawer>
-      </QueryClientProvider>
+      <ThemeProvider value={DarkTheme}>
+        <QueryClientProvider client={queryClient}>
+          <RootNavigator />
+        </QueryClientProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  splash: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.background,
+  },
+});
