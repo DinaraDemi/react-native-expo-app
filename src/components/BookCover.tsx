@@ -19,8 +19,6 @@ export const BookCover = ({
   borderRadius = 4,
   placeholderText = "No Cover",
 }: BookCoverProps) => {
-  // Keying by `uri` remounts the inner component whenever the url changes (e.g.
-  // FlashList cell recycling), so image load state resets without any effect.
   if (!uri) {
     return (
       <Placeholder

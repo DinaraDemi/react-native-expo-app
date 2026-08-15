@@ -50,7 +50,6 @@ const DrawerLayout = () => {
         }}
       />
 
-      {/* Hide internal routes from drawer */}
       <Drawer.Screen
         name="book/[id]"
         options={{

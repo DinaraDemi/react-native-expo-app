@@ -62,8 +62,6 @@ const ShimmerContainer = ({
   );
 };
 
-// ---------- Book list skeleton (matches BookItem layout) ----------
-
 const SKELETON_COUNT = 6;
 
 export const BookListSkeleton = () => {
@@ -83,8 +81,6 @@ export const BookListSkeleton = () => {
     </Animated.View>
   );
 };
-
-// ---------- Book details skeleton ----------
 
 export const BookDetailsSkeleton = () => {
   return (
@@ -112,8 +108,6 @@ export const BookDetailsSkeleton = () => {
     </Animated.View>
   );
 };
-
-// ---------- Favourites empty skeleton ----------
 
 export const FavouritesSkeleton = () => {
   return (

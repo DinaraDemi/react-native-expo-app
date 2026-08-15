@@ -1,45 +1,48 @@
-export interface LoginFormValues {
-  email: string;
-  password: string;
-}
+import { z } from "zod";
+
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required.")
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Enter a valid email address."),
+  password: z
+    .string()
+    .min(1, "Password is required.")
+    .min(8, "Password must be at least 8 characters.")
+    .regex(/[A-Za-z]/, "Password must contain at least one letter and one number.")
+    .regex(/\d/, "Password must contain at least one letter and one number."),
+});
+
+export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export type FormErrors<T> = Partial<Record<keyof T, string>>;
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/**
- * Validates an email address. Returns an error message or `undefined` when
- * the value is valid.
- */
-export const validateEmail = (email: string): string | undefined => {
-  const value = email.trim();
-  if (!value) return "Email is required.";
-  if (!EMAIL_REGEX.test(value)) return "Enter a valid email address.";
-  return undefined;
+const firstError = (schema: z.ZodType<string>, value: string): string | undefined => {
+  const result = schema.safeParse(value);
+  return result.success ? undefined : result.error.issues[0]?.message;
 };
 
-/**
- * Validates a password. Returns an error message or `undefined` when the
- * value is valid.
- */
-export const validatePassword = (password: string): string | undefined => {
-  if (!password) return "Password is required.";
-  if (password.length < 8) return "Password must be at least 8 characters.";
-  if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
-    return "Password must contain at least one letter and one number.";
+export const validateEmail = (email: string): string | undefined =>
+  firstError(loginSchema.shape.email, email);
+
+export const validatePassword = (password: string): string | undefined =>
+  firstError(loginSchema.shape.password, password);
+
+export const validateLoginForm = (values: LoginFormValues): FormErrors<LoginFormValues> => {
+  const result = loginSchema.safeParse(values);
+  if (result.success) return {};
+
+  const errors: FormErrors<LoginFormValues> = {};
+  for (const issue of result.error.issues) {
+    const [field] = issue.path;
+    if (typeof field === "string") {
+      const key = field as keyof LoginFormValues;
+      if (!errors[key]) errors[key] = issue.message;
+    }
   }
-  return undefined;
+  return errors;
 };
 
-/**
- * Validates the whole login form and returns an errors map keyed by field.
- * Fields that pass validation map to `undefined`.
- */
-export const validateLoginForm = (values: LoginFormValues): FormErrors<LoginFormValues> => ({
-  email: validateEmail(values.email),
-  password: validatePassword(values.password),
-});
-
-/** True when any field in the errors map has a message. */
 export const hasErrors = (errors: FormErrors<LoginFormValues>): boolean =>
   Object.values(errors).some(Boolean);

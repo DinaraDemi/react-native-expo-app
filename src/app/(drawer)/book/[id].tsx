@@ -24,16 +24,11 @@ import {
   View,
 } from "react-native";
 
-/**
- * Web-only fallback: copy a string to the clipboard when the Web Share API is
- * unavailable (e.g. desktop Chrome/Firefox/Edge, even on localhost).
- */
 const copyToClipboard = async (text: string): Promise<void> => {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text);
     return;
   }
-  // Legacy fallback for browsers without the async Clipboard API.
   const textarea = document.createElement("textarea");
   textarea.value = text;
   textarea.style.position = "fixed";
@@ -76,7 +71,6 @@ export default function BookDetailsScreen() {
   const title = details?.title || params.title || "Book Details";
   const author = params.author || "Unknown Author";
 
-  // Reconstruct a minimal Book object for the favourites hook
   const bookKey = `/works/${params.id}`;
   const bookForFav = buildBookFromDetailMeta({
     id: params.id,
@@ -114,16 +108,12 @@ export default function BookDetailsScreen() {
 
     const message = `Check out this book: ${title} by ${author}`;
 
-    // Web: the Web Share API is only available in some browsers, so fall back to
-    // copying the link when it is not supported (desktop Chrome/Firefox/Edge).
-    // react-native-web's Alert/Share are unreliable on web, so we handle it here.
     if (Platform.OS === "web") {
       if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
         try {
           await navigator.share({ title: title || undefined, text: message, url: deepLink });
           return;
         } catch {
-          // User cancelled the share sheet (or it failed) — nothing else to do.
           return;
         }
       }

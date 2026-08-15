@@ -94,7 +94,11 @@ const LoginField = ({
           </TouchableOpacity>
         )}
       </View>
-      {error ? <Text style={styles.error}>{error}</Text> : hint ? <Text style={styles.hint}>{hint}</Text> : null}
+      {error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : hint ? (
+        <Text style={styles.hint}>{hint}</Text>
+      ) : null}
     </View>
   );
 };
@@ -116,7 +120,6 @@ export const LoginForm = () => {
   const handleChange = (field: Field) => (text: string) => {
     setValues((prev) => ({ ...prev, [field]: text }));
     setSubmitError(null);
-    // Re-validate live once the field has been touched or already shows an error.
     if (touched[field] || errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: validateField(field, text) }));
     }
@@ -137,12 +140,8 @@ export const LoginForm = () => {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      // Simulate the network round-trip to an auth API. Replace with a real
-      // `loginApi(email, password)` call when a backend is available.
       await new Promise((resolve) => setTimeout(resolve, 800));
       login(values.email.trim());
-      // Navigation to the drawer group is handled automatically by the
-      // `Stack.Protected` guards in src/app/_layout.tsx.
     } catch {
       setSubmitError("Something went wrong. Please try again.");
       setIsSubmitting(false);
@@ -201,7 +200,6 @@ export const LoginForm = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   form: {
@@ -269,4 +267,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-

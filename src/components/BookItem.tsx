@@ -13,8 +13,6 @@ interface BookItemProps {
 }
 
 export const BookItem = ({ item }: BookItemProps) => {
-  // Subscribe to this row's own fav state only, so toggling any other book
-  // does not re-render every visible cell in the list.
   const fav = useFavouritesStore((s) => s.favourites.some((b) => b.key === item.key));
   const toggleFavourite = useFavouritesStore((s) => s.toggleFavourite);
 

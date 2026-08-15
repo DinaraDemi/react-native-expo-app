@@ -1,12 +1,19 @@
 import { COLORS } from "@/constants/colors";
 import { useAuthStore } from "@/store/authStore";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, Platform, StyleSheet, TouchableOpacity } from "react-native";
 
 export const SignOutButton = () => {
   const logout = useAuthStore((s) => s.logout);
 
   const handlePress = () => {
+    if (Platform.OS === "web") {
+      if (typeof window !== "undefined" && window.confirm("Are you sure you want to sign out?")) {
+        logout();
+      }
+      return;
+    }
+
     Alert.alert("Sign out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
       { text: "Sign Out", style: "destructive", onPress: logout },

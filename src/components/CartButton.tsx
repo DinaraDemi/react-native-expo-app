@@ -18,7 +18,6 @@ export const CartButton = () => {
   const badgeScale = useSharedValue(1);
   const prevQuantityRef = useRef(totalQuantity);
 
-  // Spring the badge whenever the cart quantity changes.
   useEffect(() => {
     const prev = prevQuantityRef.current;
     if (prev === totalQuantity) return;
