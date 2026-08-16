@@ -1,15 +1,14 @@
 import { COLORS } from "@/constants/colors";
-import { useAuthStore } from "@/store/authStore";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
-import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient();
 
 function RootNavigator() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { isAuthenticated } = useAuth();
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -23,18 +22,10 @@ function RootNavigator() {
   );
 }
 
-export default function RootLayout() {
-  
-  const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
+function AppNavigator() {
+  const { isHydrating } = useAuth();
 
-  useEffect(() => {
-    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
-      setHydrated(true);
-    });
-    return unsubscribe;
-  }, []);
-
-  if (!hydrated) {
+  if (isHydrating) {
     return (
       <View style={styles.splash}>
         <ActivityIndicator size="large" color={COLORS.text} />
@@ -42,11 +33,17 @@ export default function RootLayout() {
     );
   }
 
+  return <RootNavigator />;
+}
+
+export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={DarkTheme}>
         <QueryClientProvider client={queryClient}>
-          <RootNavigator />
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

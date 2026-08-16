@@ -1,5 +1,5 @@
 import { COLORS } from "@/constants/colors";
-import { useAuthStore } from "@/store/authStore";
+import { useAuth } from "@/context/AuthContext";
 import {
   hasErrors,
   validateEmail,
@@ -107,7 +107,7 @@ const validateField = (field: Field, value: string): string | undefined =>
   field === "email" ? validateEmail(value) : validatePassword(value);
 
 export const LoginForm = () => {
-  const login = useAuthStore((s) => s.login);
+  const { signIn } = useAuth();
   const passwordRef = useRef<TextInput>(null);
 
   const [values, setValues] = useState<LoginFormValues>({ email: "", password: "" });
@@ -140,8 +140,7 @@ export const LoginForm = () => {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      login(values.email.trim());
+      await signIn(values.email.trim(), values.password);
     } catch {
       setSubmitError("Something went wrong. Please try again.");
       setIsSubmitting(false);
