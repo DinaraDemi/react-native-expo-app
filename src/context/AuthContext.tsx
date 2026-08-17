@@ -1,6 +1,6 @@
 import { login as apiLogin } from "@/api/auth";
 import { clearToken, getStoredToken, storeToken } from "@/utils/secureStorage";
-import { jwtDecode } from "jwt-decode";
+import { decodeToken, isTokenExpired, userFromTokenClaims } from "@/utils/jwt";
 import {
   createContext,
   useCallback,
@@ -15,13 +15,6 @@ export interface AuthUser {
   email: string;
 }
 
-interface JwtClaims {
-  sub?: string;
-  email?: string;
-  exp?: number;
-  iat?: number;
-}
-
 interface AuthContextValue {
   user: AuthUser | null;
   token: string | null;
@@ -32,13 +25,6 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-const userFromClaims = (claims: JwtClaims): AuthUser => ({
-  email: claims.email || claims.sub || "unknown",
-});
-
-const isExpired = (claims: JwtClaims): boolean =>
-  typeof claims.exp === "number" && claims.exp * 1000 <= Date.now();
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -53,13 +39,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const stored = await getStoredToken();
         if (!active || !stored) return;
 
-        const claims = jwtDecode<JwtClaims>(stored);
-        if (isExpired(claims)) {
+        const claims = decodeToken(stored);
+        if (isTokenExpired(claims)) {
           await clearToken();
           return;
         }
         setToken(stored);
-        setUser(userFromClaims(claims));
+        setUser(userFromTokenClaims(claims));
       } catch {
         await clearToken();
       } finally {
@@ -76,10 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { token: nextToken } = await apiLogin(email, password);
-    const claims = jwtDecode<JwtClaims>(nextToken);
+    const claims = decodeToken(nextToken);
     await storeToken(nextToken);
     setToken(nextToken);
-    setUser(userFromClaims(claims));
+    setUser(userFromTokenClaims(claims));
   }, []);
 
   const signOut = useCallback(async () => {

@@ -54,6 +54,10 @@ app.get("/auth/me", (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Auth API listening on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Auth API listening on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
