@@ -29,13 +29,6 @@ const DrawerLayout = () => {
       }}
     >
       <Drawer.Screen
-        name="index"
-        options={{
-          drawerLabel: "Home",
-          title: "Home",
-        }}
-      />
-      <Drawer.Screen
         name="books"
         options={{
           drawerLabel: "Books List",

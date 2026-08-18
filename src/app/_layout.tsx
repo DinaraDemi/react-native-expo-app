@@ -12,6 +12,7 @@ function RootNavigator() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(public)" />
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(drawer)" />
       </Stack.Protected>
