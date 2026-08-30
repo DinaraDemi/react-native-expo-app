@@ -44,7 +44,11 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        # `--legacy-peer-deps` matches how this lockfile was generated;
+        # plain `npm ci` hits an ERESOLVE peer conflict between react-native
+        # 0.86.0 (peerOptional @react-native/jest-preset 0.86.0) and the
+        # ^0.86.2 version pinned in devDependencies.
+        run: npm ci --legacy-peer-deps
 
       - name: Export web build
         env:
