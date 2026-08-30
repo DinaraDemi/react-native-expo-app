@@ -37,7 +37,11 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": true,
+      // Serve the web build from a subpath — GitHub Pages project site
+      // (https://dinarademi.github.io/react-native-expo-app/). Without this,
+      // exported HTML links assets from the server root (/ _expo /...) and 404s.
+      "baseUrl": "/react-native-expo-app"
     }
   }
 }
