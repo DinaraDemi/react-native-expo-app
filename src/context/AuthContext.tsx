@@ -26,12 +26,26 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+/**
+ * TEMPORARY kill-switch for the public GitHub Pages demo.
+ *
+ * When `true`, authorization is switched OFF: the app always behaves as if a
+ * user is signed in (no login screen, no hydration splash, no auth backend
+ * needed). Waiting for a real backend to be hosted, set this back to `false`
+ * to restore the normal login flow.
+ */
+export const AUTH_DISABLED = true;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isHydrating, setIsHydrating] = useState(true);
+  const [user, setUser] = useState<AuthUser | null>(
+    AUTH_DISABLED ? { email: "demo@example.com" } : null,
+  );
+  const [isHydrating, setIsHydrating] = useState(!AUTH_DISABLED);
 
   useEffect(() => {
+    if (AUTH_DISABLED) return;
+
     let active = true;
 
     const hydrate = async () => {
@@ -78,8 +92,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       user,
       token,
-      isAuthenticated: token !== null,
-      isHydrating,
+      isAuthenticated: AUTH_DISABLED || token !== null,
+      isHydrating: AUTH_DISABLED ? false : isHydrating,
       signIn,
       signOut,
     }),

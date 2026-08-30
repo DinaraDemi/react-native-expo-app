@@ -130,16 +130,19 @@ export and publishes it to GitHub Pages on every push to `main`.
 One-time setup:
 
 1. On GitHub → **Settings → Pages**, set **Source** to **GitHub Actions**.
-2. (Required for login to work) Host the auth server (`server/index.js`) anywhere that
-   can run Node — e.g. Render, Railway, Fly.io, or a small VPS. Then in GitHub →
-   **Settings → Secrets and variables → Actions → Variables**, add:
+2. (Not needed right now) Authentication is **temporarily switched off** for the
+   public demo — see the `AUTH_DISABLED` flag in `src/context/AuthContext.tsx`. The
+   static build therefore works without any backend. When you're ready to restore
+   login: set `AUTH_DISABLED = false`, host the auth server (`server/index.js`) on any
+   Node host (Render, Railway, Fly.io…), and add a repo variable in GitHub →
+   **Settings → Secrets and variables → Actions → Variables**:
 
    ```
    EXPO_PUBLIC_AUTH_API_URL = https://<your-auth-server-url>
    ```
 
-   > ⚠️ GitHub Pages is static-only. Without a hosted `EXPO_PUBLIC_AUTH_API_URL`,
-   > the deployed web build can't log in — browsing the catalogue, favourites and cart
+   > ⚠️ GitHub Pages is static-only. Without a hosted `EXPO_PUBLIC_AUTH_API_URL`, the
+   > deployed web build can't log in — browsing the catalogue, favourites and cart
    > are inside the authenticated area. The workflow falls back to
    > `http://localhost:4000`, which only works if you run the server locally.
 3. Push to `main` (or run the workflow manually from the **Actions** tab). After it

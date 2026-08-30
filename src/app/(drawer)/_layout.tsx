@@ -2,6 +2,7 @@ import { CartButton } from "@/components/CartButton";
 import { MenuButton } from "@/components/MenuButton";
 import { SignOutButton } from "@/components/SignOutButton";
 import { COLORS } from "@/constants/colors";
+import { AUTH_DISABLED } from "@/context/AuthContext";
 import { Drawer } from "expo-router/drawer";
 import { StyleSheet, View } from "react-native";
 
@@ -17,7 +18,8 @@ const DrawerLayout = () => {
         headerTitleStyle: { fontWeight: "bold" },
         headerRight: () => (
           <View style={styles.headerActions}>
-            <SignOutButton />
+            {/* hide the (dead) sign-out button while auth is disabled */}
+            {AUTH_DISABLED ? null : <SignOutButton />}
             <CartButton />
           </View>
         ),
