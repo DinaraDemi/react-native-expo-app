@@ -117,6 +117,58 @@ npx uri-scheme open "myapp:///book/OL12345W?coverId=123&author=Sample&title=Hell
 
 > ℹ️ Custom-scheme deep links only open when the app is installed. If you want http(s) links that open the app when installed and fall back to a website otherwise, see the Expo guides on [Android App Links](https://docs.expo.dev/linking/android-app-links/) and [iOS Universal Links](https://docs.expo.dev/linking/ios-universal-links/).
 
+## 🚢 Deployment
+
+The repository lives at `https://github.com/DinaraDemi/react-native-expo-app` — push
+changes with `git push origin main` (the branch is `main`; open a PR for anything else).
+
+### 1. Web — GitHub Pages (automatic)
+
+A GitHub Actions workflow (`.github/workflows/deploy-web.yml`) builds the static web
+export and publishes it to GitHub Pages on every push to `main`.
+
+One-time setup:
+
+1. On GitHub → **Settings → Pages**, set **Source** to **GitHub Actions**.
+2. (Required for login to work) Host the auth server (`server/index.js`) anywhere that
+   can run Node — e.g. Render, Railway, Fly.io, or a small VPS. Then in GitHub →
+   **Settings → Secrets and variables → Actions → Variables**, add:
+
+   ```
+   EXPO_PUBLIC_AUTH_API_URL = https://<your-auth-server-url>
+   ```
+
+   > ⚠️ GitHub Pages is static-only. Without a hosted `EXPO_PUBLIC_AUTH_API_URL`,
+   > the deployed web build can't log in — browsing the catalogue, favourites and cart
+   > are inside the authenticated area. The workflow falls back to
+   > `http://localhost:4000`, which only works if you run the server locally.
+3. Push to `main` (or run the workflow manually from the **Actions** tab). After it
+   finishes, your app is live at `https://dinarademi.github.io/react-native-expo-app/`.
+
+> 💡 Troubleshooting: if a route like `/book/<id>` gives a 404 on a hard refresh, it's
+> just GitHub Pages not knowing the dynamic route — in-app navigation works fine because
+> expo-router handles it client-side.
+
+### 2. Mobile — EAS Build & EAS Update
+
+For real iOS/Android builds (TestFlight, Play Store, sideloading) and over-the-air
+updates, use [Expo Application Services (EAS)](https://expo.dev/eas):
+
+```bash
+npx eas-cli@latest login
+npx eas-cli@latest init          # creates eas.json (one-time)
+npx eas-cli@latest build --platform ios
+npx eas-cli@latest build --platform android
+npx eas-cli@latest update        # push JS updates to installed builds (OTA)
+```
+
+### 3. Backend — `server/`
+
+The Express auth API is not a static site, so it can't live on GitHub Pages. Deploy it
+to any Node host (Render, Railway, Fly.io) and set `EXPO_PUBLIC_AUTH_API_URL` in the
+app's environment to its public URL. Its only env vars are `PORT`, `JWT_SECRET`,
+`TOKEN_TTL` and the optional `DEMO_EMAIL`/`DEMO_PASSWORD`.
+
 ## 🙌 Acknowledgements
 
 - Catalogue & metadata: [OpenLibrary API](https://openlibrary.org/developers/api)
